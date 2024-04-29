@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FormFieldComponent from "@/components/CreateForm/CreateForm";
 import Toast from "@/components/Toast/Toast";
 
-function FormCreate() {
+function FormCreate({ editform }) {
   const [fields, setFields] = useState([]);
   const [snackbar, setSnackbar] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     fields: [],
   });
-
+  useEffect(() => {
+    if (editform) {
+      setForm(editform);
+      setFields(editform.fields);
+    }
+  }, [editform]);
   const addField = () => {
     const newField = {
       id: fields.length + 1,
@@ -40,15 +46,11 @@ function FormCreate() {
       fields: fields,
     };
 
-    const currentFormsJson =
-      localStorage.getItem("form");
-    const currentForms = currentFormsJson
-      ? JSON.parse(currentFormsJson)
-      : [];
+    const currentFormsJson = localStorage.getItem("forms");
+    const currentForms = currentFormsJson ? JSON.parse(currentFormsJson) : [];
 
     const existingForm = currentForms.find(
-      (localForm) =>
-        localForm.name === newForm.name
+      (localForm) => localForm.name === newForm.name
     );
 
     if (existingForm) {
@@ -57,17 +59,10 @@ function FormCreate() {
       currentForms.push(newForm);
     }
 
-    localStorage.setItem(
-      "form",
-      JSON.stringify(currentForms)
-    );
+    localStorage.setItem("forms", JSON.stringify(currentForms));
   };
 
-  const handleFieldChange = (
-    index,
-    key,
-    value
-  ) => {
+  const handleFieldChange = (index, key, value) => {
     const newFields = [...fields];
     newFields[index][key] = value;
     setFields(newFields);
@@ -83,11 +78,10 @@ function FormCreate() {
     <div className="flex relative flex-col items-center justify-center h-screen">
       <div className="w-1/2 flex flex-col gap-5 border border-gray-300 p-12 rounded-lg">
         <div className="flex items-center justify-center mb-4">
-          <label className="mr-2">
-            Form Name:
-          </label>
+          <label className="mr-2">Form Name:</label>
           <input
             type="text"
+            value={form.name}
             onChange={(e) =>
               setForm({
                 ...form,
@@ -100,6 +94,7 @@ function FormCreate() {
         </div>
         {fields.map((field, index) => (
           <FormFieldComponent
+            fieldTypeSelect={field.type === "select" && true}
             key={field.id}
             field={field}
             index={index}
@@ -119,11 +114,28 @@ function FormCreate() {
         >
           Save the Form
         </button>
+        {editform ? (
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 flex justify-center items-center rounded"
+            onClick={() => {
+              localStorage.setItem(
+                "forms",
+                JSON.stringify(
+                  JSON.parse(localStorage.getItem("forms")).filter(
+                    (f) => f.id !== editform.id
+                  )
+                )
+              );
+              window.location.href = "/list-forms";
+            }}
+          >
+            Delete the Form
+          </button>
+        ) : null}
       </div>
-      <Toast
-        snackbar={snackbar}
-        setSnackbar={setSnackbar}
-      />
+      {editform ? null : (
+        <Toast snackbar={snackbar} setSnackbar={setSnackbar} />
+      )}
     </div>
   );
 }

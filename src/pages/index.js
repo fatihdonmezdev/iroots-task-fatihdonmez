@@ -1,5 +1,9 @@
-import Navbar from "@/components/Navbar/Navbar";
+import FormCreate from "./create-form";
 
 export default function Home() {
-  return <main></main>;
+  return (
+    <main>
+      <FormCreate />
+    </main>
+  );
 }

@@ -24,7 +24,7 @@ const FormFieldComponent = ({
       if (form) {
         const localField = form.fields.find(
           (fieldz) => fieldz.label === field.label
-        ); //
+        );
         if (localField && localField.options) {
           setOptions(localField.options);
         }
@@ -48,8 +48,6 @@ const FormFieldComponent = ({
     setOptions(updatedOptions);
   };
   const removeOption = (option) => {
-    console.log(options);
-    console.log(option);
     const filteredOptions = options.filter((optionItem) => {
       return optionItem !== option;
     });
@@ -68,7 +66,7 @@ const FormFieldComponent = ({
       }
       return form;
     });
-
+    setShowModal(!showModal);
     setForms(updatedForms);
     localStorage.setItem("forms", JSON.stringify(updatedForms));
     console.log("Options updated and saved to localStorage.");
@@ -98,7 +96,7 @@ const FormFieldComponent = ({
         >
           Delete Field
         </button>
-        {fieldTypeSelect && (
+        {formname && fieldTypeSelect && (
           <>
             <button
               className="flex items-center justify-center p-2 bg-blue-500 text-white rounded hover:bg-blue-700"
